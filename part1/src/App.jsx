@@ -1,77 +1,37 @@
-import { useState } from "react";
+import { useState } from 'react'
 
-const StatisticLine = ({ text, value }) => {
+const Button = ({ handleClick, text }) => (
+  <button onClick={handleClick}>
+    {text}
+  </button>
+)
+
+const App = () => {
+  const anecdotes = [
+    'If it hurts, do it more often.',
+    'Adding manpower to a late software project makes it later!',
+    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    'Premature optimization is the root of all evil.',
+    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
+    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
+    'The only way to go fast, is to go well.'
+  ]
+   
+  const [selected, setSelected] = useState(0)
+
+
+  const handleNextAnecdote = () => {
+    const randomIndex = Math.floor(Math.random() * anecdotes.length)
+    setSelected(randomIndex)
+  }
+
   return (
-        <tr>
-          <td>{text}</td>
-          <td>{value}</td>
-        </tr>
+    <div>
+      {anecdotes[selected]}
+      <Button handleClick={handleNextAnecdote} text="next anecdote" />
+    </div>
   )
 }
 
-const Statistics = ({ good, neutral, bad }) => {
-  const total = good + neutral + bad;
-  if (total === 0) {
-    return <p>No feedback given</p>;
-  }
-  const average = (good - bad) / total || 0;
-  const positive = (good / total) * 100 || 0;
-
-  return (
-    <table>
-      <tbody>
-        <StatisticLine text = "Good" value = {good} />
-        <StatisticLine text = "Neutral" value = {neutral} />
-        <StatisticLine text = "Bad" value = {bad} />
-        <StatisticLine text = "Total" value = {total} />
-        <StatisticLine text = "Average" value = {average} />
-        <StatisticLine text = "Positive" value = {positive + "%"} />
-      </tbody>
-    </table>
-  );
-};
-
-// Button component
-const Button =({ onClick, text }) => (
-  <button onClick = {onClick}>{text}</button>
-);
-
-const App = () => {
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
-
-// Log each render
-  console.log("current feedback count shows we have: good", good, "neutal:", neutral, "bad:" , bad);
-
-  const handleGoodClick = () => {
-    console.log("good button clicked. Value before click:", good);
-    setGood(good + 1);
-  };
-
-  const handleNeutralClick = () => {
-    console.log("neutral button clicked. Value before click:", neutral);
-    setNeutral(neutral + 1);
-  };
-
-  const handleBadClick = () => {
-    console.log("bad button clicked. Value before click:", bad);
-    setBad(bad + 1);
-  };
-
-  return (
-      <div>
-        <h1>give feedback</h1>
-
-        <Button onClick = {handleGoodClick} text = "good "/>
-        <Button onClick = {handleNeutralClick} text = "neutral "/>
-        <Button onClick = {handleBadClick} text = "bad "/>
-
-        <h1>Statistics</h1>
-
-        <Statistics good = {good} neutral={neutral} bad={bad}/>
-
-      </div>
-  );
-};
-export default App;
+export default App
