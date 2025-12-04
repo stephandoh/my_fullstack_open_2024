@@ -27,18 +27,39 @@ const App = () => {
   }
 
   const handleVote = () => {
-  const votesCopy = [...votes] // make a copy of the array
-  votesCopy[selected] += 1     // increment vote for the selected anecdote
-  setVotes(votesCopy)          // update state
+    const votesCopy = [...votes]
+    votesCopy[selected] += 1
+    setVotes(votesCopy)
   }
+
+  // what is anectode with max votes
+  const maxVotes = Math.max(...votes)
+
+  const topAnecdoteIndexes = votes
+    .map((vote, index) => (vote === maxVotes ? index : null))
+    .filter(index => index !== null)
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
+
       <p>{anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
 
       <Button handleClick={handleVote} text="vote" />
       <Button handleClick={handleNextAnecdote} text="next anecdote" />  
+
+      <h1>Anecdote(s) with most votes</h1>
+
+      {maxVotes === 0 ? (
+        <p>No votes yet</p>
+      ) : (
+        topAnecdoteIndexes.map(index => (
+          <p key={index}>
+            {anecdotes[index]} — has {maxVotes} votes
+          </p>
+        ))
+      )}
     </div>
   )
 }
