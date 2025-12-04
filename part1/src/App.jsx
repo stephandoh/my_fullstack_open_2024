@@ -1,15 +1,31 @@
 import { useState } from "react";
 
+const Statistics = ({ good, neutral, bad }) => {
+  const total = good + neutral + bad;
+  const average = (good - bad) / total || 0;
+  const positive = (good / total) * 100 || 0;
+
+  return (
+    <div>
+      <p>Good: {good}</p>
+      <p>Neutral: {neutral}</p>
+      <p>Bad: {bad}</p>
+      <p>Total: {total}</p>
+      <p>Average: {average}</p>
+      <p>Positive: {positive}%</p>
+    </div>
+  );
+};
+
+// Button component
+const Button =({ onClick, text }) => (
+  <button onClick = {onClick}>{text}</button>
+);
+
 const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-  const total = good + neutral + bad;
-
-  // Button component
-  const Button =({ onClick, text }) => (
-    <button onClick = {onClick}>{text}</button>
-  );
 
 // Log each render
   console.log("current feedback count shows we have: good", good, "neutal:", neutral, "bad:" , bad);
@@ -31,7 +47,6 @@ const App = () => {
 
   return (
       <div>
-
         <h1>give feedback</h1>
 
         <Button onClick = {handleGoodClick} text = "good "/>
@@ -44,9 +59,7 @@ const App = () => {
         <p>neutral {neutral} </p>
         <p>bad {bad} </p>
 
-        <p>all {total}</p>
-        <p>average {(good - bad) / total || 0} </p>
-        <p>positive {((good / total) * 100) || 0} %</p>
+       <Statistics good = {good} neutral={neutral} bad={bad}/>
 
       </div>
   );
