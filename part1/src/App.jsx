@@ -1,11 +1,14 @@
  // Define a component responsible for formatting a single course called Course
 
   const Course = ({ course }) => {
+      const total = course.parts.reduce((sum, part) => sum + part.exercises, 0)
+      console.log('showing course', course.name, 'with total exercises', total, 
+        'with course names:', course.parts.map(part => part.name).join(', '))
     return (
       <div>
         <h1>{course.name}</h1>
         <ul>{course.parts.map(part => (<li key={part.id}>{part.name} {part.exercises}</li>))}</ul>
-        <b>Total of exercises {course.parts.reduce((sum, part) => sum + part.exercises, 0)}</b>
+        <b>Total of exercises {total}</b>
       </div>
     )
   }
