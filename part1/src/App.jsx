@@ -1,3 +1,15 @@
+ // Define a component responsible for formatting a single course called Course
+
+  const Course = ({ course }) => {
+    return (
+      <div>
+        <h1>{course.name}</h1>
+        <ul>{course.parts.map(part => (<li key={part.id}>{part.name} {part.exercises}</li>))}</ul>
+        <b>Total of exercises {course.parts.reduce((sum, part) => sum + part.exercises, 0)}</b>
+      </div>
+    )
+  }
+
 const App = () => {
   const course = {
     id: 1,
@@ -17,20 +29,16 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
-      }
+      },
+      {
+     		name: 'redux',
+     		exercises : 11,
+     		id: 4
+      }
+
     ]
   }
-  // Define a component responsible for formatting a single course called Course
-
-  const Course = ({ course }) => {
-    return (
-      <div>
-        <h1>{course.name}</h1>
-        <ul>{course.parts.map(part => (<li key={part.id}>{part.name} {part.exercises}</li>))}
-        </ul>
-      </div>
-    )
-  }
+ 
   return <Course course={course} />
 }
 
