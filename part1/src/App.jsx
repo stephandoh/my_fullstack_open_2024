@@ -1,10 +1,20 @@
 import { useState, useEffect } from 'react'
 import personsService from './services/persons' 
+import Notification from './Components/Notification'  
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [notification, setNotification] = useState({ message: null, type: null })
+
+  const notify = (message, type="success") => {
+  setNotification({ message, type })
+
+  setTimeout(() => {
+    setNotification({ message: null, type: null })
+  }, 3000)
+}
 
   // Fetch persons once
   useEffect(() => {
@@ -44,6 +54,7 @@ const addPerson = (event) => {
         .update(existingPerson.id, updatedPerson)
         .then(returnedPerson => {
           setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+          notify(`Updated ${returnedPerson.name}'s number to ${returnedPerson.number}`)
           setNewName('')
           setNewNumber('')
         })
@@ -69,6 +80,7 @@ const addPerson = (event) => {
     .create(newPersonObject)
     .then(returnedPerson => {
       setPersons(persons.concat(returnedPerson))
+      notify(`Added ${returnedPerson.name} (${returnedPerson.number})`)
       setNewName('')
       setNewNumber('')
     })
@@ -114,7 +126,9 @@ const deletePerson = (id) => {
       })
       .catch(err => {
         console.error("Failed to delete person:", err)
-        alert(`${person.name} was already removed from the server.`)
+        notify(`${person.name} was already removed from the server.`, "error")
+
+        //alert(`${person.name} was already removed from the server.`) //if we want to use alert instead of notification
 
         // Remove from UI anyway
         setPersons(persons.filter(p => p.id !== id))
@@ -124,7 +138,10 @@ const deletePerson = (id) => {
 
 
   return (
+    
     <div>
+      <Notification message={notification.message} type={notification.type} />
+
       <h2>Phonebook</h2>
 
       <form onSubmit={addPerson}>
@@ -146,7 +163,7 @@ const deletePerson = (id) => {
       </form>
       <ul>
   {persons.map(person => (
-    <li key={person.id}>
+    <li className='note' key={person.id}>
       {person.name} — {person.number}
 
       <button onClick={() => toggleFavorite(person.id)}>
