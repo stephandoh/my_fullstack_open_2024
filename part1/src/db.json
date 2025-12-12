@@ -1,0 +1,39 @@
+{
+  "persons": [
+    {
+      "name": "Arto Hellas",
+      "number": "23456789",
+      "id": "1",
+      "favorite": true
+    },
+    {
+      "name": "Dan Abramov",
+      "number": "12-43-234345",
+      "id": "3",
+      "favorite": false
+    },
+    {
+      "name": "Mary Poppendieck",
+      "number": "39-23-6423122",
+      "id": "4",
+      "favorite": true
+    },
+    {
+      "id": "750e",
+      "name": "lora",
+      "number": "7654",
+      "favorite": false
+    },
+    {
+      "id": "d75d",
+      "name": "dan",
+      "number": "545456343",
+      "favorite": true
+    },
+    {
+      "id": "5df7",
+      "name": "ppp",
+      "number": "8888"
+    }
+  ]
+}
