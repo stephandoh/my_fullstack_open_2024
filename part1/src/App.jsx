@@ -25,22 +25,25 @@ const App = () => {
         />
       </div>
 
-      {/* CASE 1: too many matches */}
+      {/* Case 1: too many matches */}
       {filteredCountries.length > 10 && (
         <p>Too many matches, specify another filter</p>
       )}
 
-      {/* CASE 2: between 2 and 10 matches */}
+      {/* Case 2: 2–10 matches */}
       {filteredCountries.length > 1 &&
         filteredCountries.length <= 10 &&
         filteredCountries.map(country => (
-          <p key={country.cca3}>
+          <div key={country.cca3}>
             {country.name.common}
-          </p>
+            <button onClick={() => setQuery(country.name.common)}>
+              show
+            </button>
+          </div>
         ))
       }
 
-      {/* CASE 3: exactly 1 match */}
+      {/* Case 3: exactly one match */}
       {filteredCountries.length === 1 && (
         <CountryDetails country={filteredCountries[0]} />
       )}
