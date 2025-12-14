@@ -1,183 +1,75 @@
 import { useState, useEffect } from 'react'
-import personsService from './services/persons' 
-import Notification from './Components/Notification'  
+import countriesService from './services/countries'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [notification, setNotification] = useState({ message: null, type: null })
+  const [countries, setCountries] = useState([])
+  const [query, setQuery] = useState('')
 
-  const notify = (message, type="success") => {
-  setNotification({ message, type })
-
-  setTimeout(() => {
-    setNotification({ message: null, type: null })
-  }, 3000)
-}
-
-  // Fetch persons once
   useEffect(() => {
-    console.log("Fetching persons...")
-    personsService
-      .getAll()
-      .then(initialPersons => {
-        console.log("Data received!")
-        setPersons(initialPersons)
-      })
-      .catch(err => {
-        console.error("Failed to fetch persons:", err)
-        alert("Could not fetch phonebook data from server")
-      })
+    countriesService.getAll().then(data => {
+      setCountries(data)
+    })
   }, [])
 
-// Add or update person
-const addPerson = (event) => {
-  event.preventDefault()
-
-  // Check if person already exists
-  const existingPerson = persons.find(p => p.name === newName)
-
-  // If already exists → confirm number update
-  if (existingPerson) {
-    const confirmUpdate = window.confirm(
-      `${existingPerson.name} is already added to phonebook. Replace the old number with a new one?`
-    )
-
-    if (confirmUpdate) {
-      const updatedPerson = {
-        ...existingPerson,
-        number: newNumber
-      }
-
-      personsService
-        .update(existingPerson.id, updatedPerson)
-        .then(returnedPerson => {
-          setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
-          notify(`Updated ${returnedPerson.name}'s number to ${returnedPerson.number}`)
-          setNewName('')
-          setNewNumber('')
-        })
-        .catch(err => {
-          console.error("Failed to update number:", err)
-          alert(`Could not update ${existingPerson.name}. They may have been removed.`)
-          setPersons(persons.filter(p => p.id !== existingPerson.id))
-        })
-
-      return // stop here, so we don’t create a new entry
-    }
-    return // if user cancels, do nothing
-  }
-
-  // If name does NOT exist → normal create
-  const newPersonObject = {
-    name: newName,
-    number: newNumber,
-    favorite: false
-  }
-
-  personsService
-    .create(newPersonObject)
-    .then(returnedPerson => {
-      setPersons(persons.concat(returnedPerson))
-      notify(`Added ${returnedPerson.name} (${returnedPerson.number})`)
-      setNewName('')
-      setNewNumber('')
-    })
-    .catch(err => {
-      console.error("Failed to add person:", err)
-      alert("Could not add person. Try again later.")
-    })
-}
-
-
-  // Toggle favorite
-  const toggleFavorite = (id) => {
-    const person = persons.find(p => p.id === id)
-    const updatedPerson = { ...person, favorite: !person.favorite }
-
-    console.log(
-      `Setting ${person.name} as ${updatedPerson.favorite ? "FAVORITE ⭐" : "NOT favorite ❌"}`
-    )
-
-    personsService
-      .update(id, updatedPerson)
-      .then(returnedPerson => {
-        setPersons(persons.map(p => p.id !== id ? p : returnedPerson))
-      })
-      .catch(err => {
-        console.error("Failed to update person:", err)
-        alert(`${updatedPerson.name} could not be updated. It might have been removed from the server.`)
-        // Optional: remove person locally if deleted on server
-        setPersons(persons.filter(p => p.id !== id))
-      })
-  }
-
-  // Delete person
-const deletePerson = (id) => {
-  const person = persons.find(p => p.id === id)
-
-  if (window.confirm(`Delete ${person.name}?`)) {
-
-    personsService
-      .remove(id)
-      .then(() => {
-        setPersons(persons.filter(p => p.id !== id))
-      })
-      .catch(err => {
-        console.error("Failed to delete person:", err)
-        notify(`${person.name} was already removed from the server.`, "error")
-
-        //alert(`${person.name} was already removed from the server.`) //if we want to use alert instead of notification
-
-        // Remove from UI anyway
-        setPersons(persons.filter(p => p.id !== id))
-      })
-  }
-}
-
+  const filteredCountries = countries.filter(country =>
+    country.name.common.toLowerCase().includes(query.toLowerCase())
+  )
 
   return (
-    
     <div>
-      <Notification message={notification.message} type={notification.type} />
+      <div>
+        find countries{' '}
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
 
-      <h2>Phonebook</h2>
+      {/* CASE 1: too many matches */}
+      {filteredCountries.length > 10 && (
+        <p>Too many matches, specify another filter</p>
+      )}
 
-      <form onSubmit={addPerson}>
-        <div>
-          name:
-          <input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-        </div>
-        <div>
-          number:
-          <input
-            value={newNumber}
-            onChange={(e) => setNewNumber(e.target.value)}
-          />
-        </div>
-        <button type="submit">add</button>
-      </form>
-      <ul>
-  {persons.map(person => (
-    <li className='note' key={person.id}>
-      {person.name} — {person.number}
+      {/* CASE 2: between 2 and 10 matches */}
+      {filteredCountries.length > 1 &&
+        filteredCountries.length <= 10 &&
+        filteredCountries.map(country => (
+          <p key={country.cca3}>
+            {country.name.common}
+          </p>
+        ))
+      }
 
-      <button onClick={() => toggleFavorite(person.id)}>
-        {person.favorite ? 'Unfavorite' : 'Favorite'}
-      </button>
-
-      <button onClick={() => deletePerson(person.id)}>
-        Delete
-      </button>
-    </li>
-  ))}
-</ul>
-
+      {/* CASE 3: exactly 1 match */}
+      {filteredCountries.length === 1 && (
+        <CountryDetails country={filteredCountries[0]} />
+      )}
     </div>
   )
 }
+
+const CountryDetails = ({ country }) => {
+  return (
+    <div>
+      <h2>{country.name.common}</h2>
+
+      <p>capital {country.capital[0]}</p>
+      <p>area {country.area}</p>
+
+      <h3>languages:</h3>
+      <ul>
+        {Object.values(country.languages).map(lang => (
+          <li key={lang}>{lang}</li>
+        ))}
+      </ul>
+
+      <img
+        src={country.flags.png}
+        alt={`Flag of ${country.name.common}`}
+        width="150"
+      />
+    </div>
+  )
+}
+
 export default App
