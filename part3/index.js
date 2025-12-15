@@ -27,59 +27,53 @@ let persons = [
     }
 ]
 
-//API end point to return message on homepage
-app.get('/', (request, response) => {
-  response.send('<h1>Welcome to persons API!</h1>')
+// Root endpoint
+app.get('/', (req, res) => {
+  res.send('<h1>Welcome to persons API!</h1>')
 })
 
-//API end point to return all persons in array
-app.get('/api/persons', (request, response) => {
-  response.json(persons)
+// Get all persons
+app.get('/api/persons', (req, res) => {
+  res.json(persons)
 })
 
-//API end point to show number of persons in array and current time
+// Get info: count + current time
 app.get('/info', (req, res) => {
   const count = persons.length
   const time = new Date().toString()
-
   res.send(`
     <p>Phonebook has info for ${count} people</p>
     <p>${time}</p>
   `)
 })
 
-//API endpoint to return specific person based on id
-app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find(person => person.id === id)
-
+// Get one person by id (optional but useful)
+app.get('/api/persons/:id', (req, res) => {
+  const id = req.params.id
+  const person = persons.find(p => p.id === id)
   if (person) {
-    response.json(person)
+    res.json(person)
   } else {
-    response.status(404).end()
+    res.status(404).end()
   }
 })
 
-//API endpoint to delete a sungle phonebook entry
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
-})
-
-//API endpoint to add new persons
-app.post('/api/persons', (request, response) => {
-  const body = request.body
+// Add a new person (POST)
+app.post('/api/persons', (req, res) => {
+  const body = req.body
 
   // Validate required fields
   if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'name or number missing'
-    })
+    return res.status(400).json({ error: 'name or number is missing' })
   }
 
-  // Generate a random id (large range to avoid collisions)
+  // Check for duplicate name
+  const nameExists = persons.find(p => p.name === body.name)
+  if (nameExists) {
+    return res.status(400).json({ error: 'name must be unique' })
+  }
+
+  // Generate a random ID
   const id = Math.floor(Math.random() * 1000000).toString()
 
   const person = {
@@ -88,14 +82,19 @@ app.post('/api/persons', (request, response) => {
     number: body.number
   }
 
-  // Add new person to the phonebook
   persons = persons.concat(person)
 
-  // Return the created person
-  response.status(201).json(person)
+  res.status(201).json(person)
 })
 
+// Delete a person by id
+app.delete('/api/persons/:id', (req, res) => {
+  const id = req.params.id
+  persons = persons.filter(p => p.id !== id)
+  res.status(204).end()
+})
 
+// Start the server
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
