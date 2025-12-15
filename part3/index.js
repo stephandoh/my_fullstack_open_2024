@@ -60,6 +60,42 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
+//API endpoint to delete a sungle phonebook entry
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  persons = persons.filter(person => person.id !== id)
+
+  response.status(204).end()
+})
+
+//API endpoint to add new persons
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  // Validate required fields
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: 'name or number missing'
+    })
+  }
+
+  // Generate a random id (large range to avoid collisions)
+  const id = Math.floor(Math.random() * 1000000).toString()
+
+  const person = {
+    id: id,
+    name: body.name,
+    number: body.number
+  }
+
+  // Add new person to the phonebook
+  persons = persons.concat(person)
+
+  // Return the created person
+  response.status(201).json(person)
+})
+
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
