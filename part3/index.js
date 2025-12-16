@@ -3,6 +3,17 @@ const app = express()
 
 app.use(express.json())
  
+//middleware to log incoming request
+const requestLogger = (request, response, next) => {
+    console.log('Method', request.method)
+    console.log('Path: ', request.path)
+    console.log('Body: ', request.body)
+    console.log('---')
+    next()
+}
+
+app.use(requestLogger)
+
 
 let persons = [
     { 
@@ -93,6 +104,12 @@ app.delete('/api/persons/:id', (req, res) => {
   persons = persons.filter(p => p.id !== id)
   res.status(204).end()
 })
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
 
 // Start the server
 const PORT = 3001
