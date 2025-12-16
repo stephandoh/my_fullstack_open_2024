@@ -1,19 +1,14 @@
 const express = require('express')
+const morgan = require('morgan') //added morgan middle ware for logs
 const app = express()
 
 app.use(express.json())
- 
-//middleware to log incoming request
-const requestLogger = (request, response, next) => {
-    console.log('Method', request.method)
-    console.log('Path: ', request.path)
-    console.log('Body: ', request.body)
-    console.log('---')
-    next()
-}
 
-app.use(requestLogger)
+morgan.token('body', (req) => {
+    return JSON.stringify(req.body)
+})
 
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
     { 
