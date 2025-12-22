@@ -1,0 +1,40 @@
+{
+  "persons": [
+    {
+      "id": "1",
+      "name": "Arto Hellas",
+      "number": "040-123456",
+      "favorite": false
+    },
+    {
+      "id": "78ee",
+      "name": "iugurtgt",
+      "number": "6564654",
+      "favorite": false
+    },
+    {
+      "id": "b1ba",
+      "name": " Arto Hellas ",
+      "number": "040-123456",
+      "favorite": false
+    },
+    {
+      "id": "d996",
+      "name": "qq",
+      "number": "11",
+      "favorite": false
+    },
+    {
+      "id": "6965",
+      "name": "rr",
+      "number": "11",
+      "favorite": false
+    },
+    {
+      "id": "2322",
+      "name": "ttt",
+      "number": "555",
+      "favorite": false
+    }
+  ]
+}
