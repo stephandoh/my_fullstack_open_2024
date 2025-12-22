@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const path = require('path')
 
 const app = express()
 
@@ -20,74 +21,55 @@ let persons = [
   { id: "4", name: "Mary Poppendieck", number: "39-23-6423122" }
 ]
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.send('<h1>Welcome to persons API!</h1>')
-})
+// --- API routes ---
 
-// Get all persons
-app.get('/api/persons', (req, res) => {
-  res.json(persons)
-})
+app.get('/api/persons', (req, res) => res.json(persons))
 
-// Info endpoint
 app.get('/info', (req, res) => {
-  res.send(`
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date()}</p>
-  `)
+  res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
 })
 
-// Get one person by id
 app.get('/api/persons/:id', (req, res) => {
   const person = persons.find(p => p.id === req.params.id)
   if (person) res.json(person)
   else res.status(404).json({ error: 'person not found' })
 })
 
-// Add new person
 app.post('/api/persons', (req, res) => {
   const { name, number } = req.body
-
-  if (!name || !number) {
-    return res.status(400).json({ error: 'name or number is missing' })
-  }
-
-  if (persons.find(p => p.name === name)) {
-    return res.status(400).json({ error: 'name must be unique' })
-  }
-
+  if (!name || !number) return res.status(400).json({ error: 'name or number is missing' })
+  if (persons.find(p => p.name === name)) return res.status(400).json({ error: 'name must be unique' })
   const id = Math.floor(Math.random() * 1000000).toString()
   const person = { id, name, number }
-
   persons = persons.concat(person)
   res.status(201).json(person)
 })
 
-// Delete person
 app.delete('/api/persons/:id', (req, res) => {
   const id = req.params.id
   persons = persons.filter(p => p.id !== id)
   res.status(204).end()
 })
 
-// Update person (for toggleFavorite / future updates)
 app.put('/api/persons/:id', (req, res) => {
   const id = req.params.id
   const person = persons.find(p => p.id === id)
-
   if (!person) return res.status(404).json({ error: 'person not found' })
-
   const updatedPerson = { ...person, ...req.body }
   persons = persons.map(p => (p.id !== id ? p : updatedPerson))
   res.json(updatedPerson)
 })
 
-// Unknown endpoint handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'unknown endpoint' })
+// --- Serve frontend ---
+
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, 'dist')))
+
+// Serve index.html for React Router (any route not starting with /api)
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
-// Start server
+// --- Start server ---
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
