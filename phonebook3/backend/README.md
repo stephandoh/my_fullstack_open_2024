@@ -2,7 +2,7 @@
 
 This is the backend API for the Phonebook app.
 
-API is deployed at: https://<your-deployed-url>
+API is deployed at: https://phonebookbackend-cqfh.onrender.com
 
 Endpoints:
 - GET /api/persons
