@@ -1,0 +1,48 @@
+/* Common notification styles */
+.notification {
+  padding: 10px 15px;
+  margin: 15px 0;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 16px;
+  border: 1px solid;
+  transition: all 0.3s ease;
+}
+
+/* Success (adding a new person) */
+.notification.success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+/* Error (failed action / delete fail) */
+.notification.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+/* Update (number updated) */
+.notification.update {
+  color: #383d6b;
+  background-color: #e2d6f3;
+  border-color: #bfa3f0;
+}
+
+/* Delete (person removed successfully) */
+.notification.delete {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+}
+
+
+.notification {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.notification.hide {
+  opacity: 0;
+}
